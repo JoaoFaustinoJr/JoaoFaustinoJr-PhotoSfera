@@ -1,3 +1,3 @@
 # PhotoSfera
 
-Prévia de um feed de fotos, vídeos e momentos. Abra `dist/index.html` em um navegador para experimentar o layout. As publicações de teste ficam na sessão do navegador.
+Abra `dist/index.html` para experimentar o feed de fotos e vídeos. As publicações de teste ficam na sessão do navegador.
