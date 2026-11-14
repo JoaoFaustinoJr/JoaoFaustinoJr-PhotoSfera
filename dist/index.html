@@ -22,7 +22,7 @@ img.media{height:auto;max-height:none}
 .caption{margin:0 0 8px;line-height:1.35}
 .impression{background:transparent;border-color:transparent;padding:10px 0;min-height:44px;font-size:14px;color:#d5b783}
 .impression:hover{text-decoration:underline;text-underline-offset:4px}
-.wordmark em::after{content:"";position:absolute;pointer-events:none;left:52%;top:48%;width:.24em;height:.24em;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle,#e9d1a0aa,transparent 70%);z-index:-1}
+.wordmark em::after{content:"";position:absolute;pointer-events:none;left:52%;top:48%;width:.48em;height:.48em;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle,#fff8e4 0%,#f7d697dd 13%,#e0af6277 32%,transparent 71%);z-index:-1}
 .share-row{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}.share-status:empty{display:none}
 </style></head><body>
 <header><div class="wordmark" aria-label="PhotoSfera"><span class="wordmark-photo">Photo</span><em>Sfera</em></div></header>
@@ -139,11 +139,25 @@ async function posts(mode, action) {
     transaction.onabort = () => reject(transaction.error);
   });
 }
+let inviteIcon;
+async function loadInviteIcon() {
+  try {
+    const response = await fetch(new URL('../obturador.png', location.href));
+    if (!response.ok) return;
+    const image = await response.blob();
+    if (image.type === 'image/png') inviteIcon = new File([image], 'PhotoSfera.png', {type: 'image/png'});
+  } catch {}
+}
+loadInviteIcon();
 byId('invite').onclick = async () => {
   const url = new URL('../?convite=2', location.href).href;
   const status = byId('invite-status');
   try {
-    if (navigator.share) await navigator.share({title:'PhotoSfera', text:'Conheça o PhotoSfera.', url});
+    if (navigator.share) {
+      const link = {title:'PhotoSfera', text:'Conheça o PhotoSfera.', url};
+      const card = inviteIcon && {title:'PhotoSfera', text:'Conheça o PhotoSfera. ' + url, files:[inviteIcon]};
+      await navigator.share(card && navigator.canShare?.(card) ? card : link);
+    }
     else {
       await navigator.clipboard.writeText(url);
       status.textContent = 'Link copiado. Cole na conversa do RAI Connect.';
