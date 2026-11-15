@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#141417"><title>PhotoSfera</title><link rel="manifest" href="./manifest.webmanifest?v=3"><link rel="icon" type="image/png" href="https://joaofaustinojr.github.io/JoaoFaustinoJr-PhotoSfera/dist/photosfera-512.png"><link rel="apple-touch-icon" href="https://joaofaustinojr.github.io/JoaoFaustinoJr-PhotoSfera/dist/photosfera-512.png"><meta property="og:title" content="PhotoSfera"><meta property="og:description" content="Compartilhe fotos, vídeos e momentos."><meta property="og:image" content="https://joaofaustinojr.github.io/JoaoFaustinoJr-PhotoSfera/dist/cartao-photosfera.jpg"><meta name="twitter:card" content="summary_large_image">
+<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#141417"><title>PhotoSfera</title><link rel="manifest" href="./manifest.webmanifest?v=3"><link rel="icon" type="image/png" href="https://joaofaustinojr.github.io/JoaoFaustinoJr-PhotoSfera/dist/photosfera-512.png"><link rel="apple-touch-icon" href="https://joaofaustinojr.github.io/JoaoFaustinoJr-PhotoSfera/dist/photosfera-512.png"><meta property="og:title" content="PhotoSfera"><meta property="og:description" content="Compartilhe fotos, vídeos e momentos."><meta property="og:image" content="https://joaofaustinojr.github.io/JoaoFaustinoJr-PhotoSfera/dist/cartao-photosfera-halo.jpg"><meta name="twitter:card" content="summary_large_image">
 <style>
 *{box-sizing:border-box}html{color-scheme:dark}body{margin:0;background:#141417;color:#e6e4e6;font:16px system-ui,sans-serif}header,main,nav{width:min(100%,680px);margin:auto}header{padding:22px;text-align:center;border-bottom:1px solid #38363b}@font-face{font-family:Sfera;src:url(sfera.woff) format("woff");font-display:swap}
 .wordmark{display:inline-flex;align-items:baseline;white-space:nowrap;padding:0 .12em .09em 0;font-size:clamp(30px,15.5cqw,88px);line-height:1.05}
@@ -155,7 +155,7 @@ async function posts(mode, action) {
     transaction.onabort = () => reject(transaction.error);
   });
 }
-const inviteUrl = new URL('./?convite=3', location.href).href;
+const inviteUrl = new URL('./?convite=4', location.href).href;
 async function copyInvite() {
   const status = byId('invite-status');
   try {
