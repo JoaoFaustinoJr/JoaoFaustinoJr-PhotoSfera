@@ -332,7 +332,7 @@ function downloadCard() {
 byId('card-download').onclick=downloadCard;
 byId('card-share').onclick=async()=>{
   if(!cardFile) return;
-  const payload={files:[cardFile],text:[cardCaption,inviteUrl].filter(Boolean).join('\n')};
+  const payload={files:[cardFile],text:[cardCaption,'PhotoSfera — Fotos, memórias e os detalhes de cada clique.'].filter(Boolean).join('\n')};
   try {
     if(navigator.canShare?.(payload)){await navigator.share(payload);return;}
   } catch(error){if(error.name==='AbortError')return;}
