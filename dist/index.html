@@ -24,7 +24,7 @@ img.media{height:auto;max-height:none}
 .impression:hover{text-decoration:underline;text-underline-offset:4px}
 .wordmark em::after{content:"";position:absolute;pointer-events:none;left:52%;top:48%;width:.48em;height:.48em;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle,#fff8e4 0%,#f7d697dd 13%,#e0af6277 32%,transparent 71%);z-index:-1}
 .share-row{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}.share-status:empty{display:none}
-</style></head><body>
+details{margin:12px 0;color:#c8c5cd}summary{cursor:pointer;padding:8px 0;color:#e0bc81}details p{font-size:.9rem} .post-actions{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px}</style></head><body>
 <header><div class="wordmark" aria-label="PhotoSfera"><span class="wordmark-photo">Photo</span><em>Sfera</em></div></header>
 <main>
 <section id="feed" aria-label="Feed">
@@ -34,11 +34,11 @@ img.media{height:auto;max-height:none}
 <img class="media" src="serra.webp" width="992" height="677" alt="Neblina entre colinas e araucárias ao amanhecer">
 <div class="pad"><p class="caption">A serra antes de acordar.</p><button class="action gold impression" type="button">Deixar uma impressão</button><div class="comments" aria-live="polite"></div></div></article>
 </section>
-<section id="publish" class="pad" hidden><h2>Publicar</h2><p class="muted">As publicações ficam salvas neste navegador.</p><form id="composer"><label>Foto ou vídeo<input name="file" type="file" accept="image/*,video/*" required></label><label>Legenda<textarea name="caption" rows="3" maxlength="400"></textarea></label><button class="action gold">Publicar neste aparelho</button><p id="notice" role="status"></p></form></section>
+<section id="publish" class="pad" hidden><h2>Publicar</h2><p class="muted">As publicações ficam salvas neste navegador.</p><form id="composer"><label>Foto ou vídeo<input name="file" type="file" accept="image/*,video/*" required></label><label>Legenda<textarea name="caption" rows="3" maxlength="400"></textarea></label><label>Nota de composição (opcional)<textarea name="composition" rows="2" maxlength="400" placeholder="O que orientou seu enquadramento?"></textarea></label><button class="action gold">Publicar neste aparelho</button><p id="notice" role="status"></p></form></section>
 <section id="profile" class="pad" hidden><h2 id="profile-name">Meu perfil</h2><img id="profile-photo" width="64" height="64" alt="Foto do perfil" hidden style="border-radius:50%;object-fit:cover;margin-top:10px"><div class="share-row"><button class="action" id="edit-profile">Editar perfil</button><button class="action" id="copy-invite">Copiar link</button></div><div class="share-row"><button class="action" id="invite">Convidar amigos</button><button class="action" id="shutter-sound" aria-pressed="true">Som do obturador</button></div><p id="invite-status" class="share-status muted" role="status"></p><p id="empty" class="muted">Suas publicações da prévia aparecem aqui.</p><div id="mine"></div></section>
 </main>
 <nav class="bottom" aria-label="Navegação principal"><button data-view="feed" aria-current="page"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5V21h-6v-6H9v6H3z"/></svg>Feed</button><button data-view="publish"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5"/><path d="M12 8v8m-4-4h8"/></svg>Publicar</button><button data-view="profile"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21v-2a8 8 0 0 1 16 0v2"/></svg>Perfil</button></nav>
-<dialog id="profile-editor"><form id="profile-form"><h2>Editar perfil</h2><label>Nome<input name="name" required maxlength="60"></label><label>Foto de perfil<input name="photo" type="file" accept="image/*"></label><p id="profile-status" role="status"></p><button class="action gold">Salvar perfil</button> <button class="action" type="button" id="cancel-profile">Cancelar</button></form></dialog><dialog id="moment"><div class="dialogbar"><h2 id="momentTitle"></h2><form method="dialog"><button class="action">Fechar</button></form></div><img class="moment" id="momentImage" alt=""><div class="row"><button class="action" id="previous">Anterior</button><button class="action" id="next">Próxima</button></div><p class="muted">Prévia ilustrativa</p></dialog>
+<dialog id="card-dialog" aria-label="Prévia do cartão PhotoSfera"><div class="dialogbar"><h2>Cartão PhotoSfera</h2><form method="dialog"><button class="action">Fechar</button></form></div><img class="moment" id="card-image" alt="Prévia do cartão assinado"><p id="card-status" role="status"></p><div class="share-row"><button class="action gold" id="card-share">Compartilhar</button><button class="action" id="card-download">Baixar cartão</button></div></dialog><dialog id="profile-editor"><form id="profile-form"><h2>Editar perfil</h2><label>Nome<input name="name" required maxlength="60"></label><label>Foto de perfil<input name="photo" type="file" accept="image/*"></label><p id="profile-status" role="status"></p><button class="action gold">Salvar perfil</button> <button class="action" type="button" id="cancel-profile">Cancelar</button></form></dialog><dialog id="moment"><div class="dialogbar"><h2 id="momentTitle"></h2><form method="dialog"><button class="action">Fechar</button></form></div><img class="moment" id="momentImage" alt=""><div class="row"><button class="action" id="previous">Anterior</button><button class="action" id="next">Próxima</button></div><p class="muted">Prévia ilustrativa</p></dialog>
 <dialog id="reply"><div class="dialogbar"><h2>Deixar uma impressão</h2><form method="dialog"><button class="action">Fechar</button></form></div><form id="commentForm"><label>Sua impressão<textarea name="comment" maxlength="300" rows="3" required></textarea></label><button class="action gold">Adicionar</button></form></dialog>
 <script>
 const byId = id => document.getElementById(id);
@@ -239,7 +239,137 @@ function playShutter(test = false) {
     soundStatus.textContent = 'O navegador bloqueou o áudio. Tente abrir o PhotoSfera no Chrome.';
   });
 }
-function showPost({file, caption}) {
+
+async function photoDetails(file, note, post) {
+  const panel = document.createElement('details');
+  const title = document.createElement('summary');
+  title.textContent = 'Ficha fotográfica';
+  panel.append(title);
+  post.querySelector('.impression').before(panel);
+  let rows = [];
+  try { rows = await readExif(file); } catch {}
+  for (const [label,value] of [...rows, ...(note ? [['Nota de composição',note]] : [])]) {
+    const line = document.createElement('p');
+    line.textContent = label + ' · ' + value;
+    panel.append(line);
+  }
+  if (!rows.length) {
+    const line = document.createElement('p');
+    line.textContent = 'Dados de captura indisponíveis neste arquivo.';
+    panel.append(line);
+  }
+}
+async function readExif(file) {
+  const d = new DataView(await file.arrayBuffer());
+  if (d.byteLength < 4 || d.getUint16(0) !== 0xffd8) return [];
+  for (let p = 2; p + 10 <= d.byteLength;) {
+    const marker = d.getUint16(p), size = d.getUint16(p+2), end = p+2+size;
+    if (marker === 0xffda || size < 2 || end > d.byteLength) break;
+    if (marker === 0xffe1 && size >= 16 && d.getUint32(p+4) === 0x45786966 && !d.getUint16(p+8)) {
+      const t = new DataView(d.buffer,p+10,end-p-10);
+      const le = t.getUint16(0) === 0x4949;
+      if (t.getUint16(2,le) !== 42) break;
+      const values = new Map();
+      const tags = new Set([271,272,34665,33434,33437,34855,37386,41988,41989,42036]);
+      function directory(start) {
+        const count = t.getUint16(start,le);
+        for (let i=0; i<count; i++) {
+          const pos=start+2+i*12, tag=t.getUint16(pos,le);
+          if (!tags.has(tag)) continue;
+          const type=t.getUint16(pos+2,le), count=t.getUint32(pos+4,le);
+          const width={2:1,3:2,4:4,5:8}[type];
+          if (!width || !count || count>512) continue;
+          const ptr=width*count<=4 ? pos+8 : t.getUint32(pos+8,le);
+          if (ptr+width*count>t.byteLength) continue;
+          let v;
+          if (type===2) v=new TextDecoder().decode(new Uint8Array(t.buffer,t.byteOffset+ptr,count)).split('\0')[0].trim();
+          if (type===3) v=t.getUint16(ptr,le);
+          if (type===4) v=t.getUint32(ptr,le);
+          if (type===5) v=t.getUint32(ptr,le)/t.getUint32(ptr+4,le);
+          if (v && (typeof v==='string' || Number.isFinite(v))) values.set(tag,v);
+        }
+      }
+      directory(t.getUint32(4,le));
+      if (values.has(34665)) directory(values.get(34665));
+      const v = tag => values.get(tag);
+      const shutter=v(33434);
+      return [
+        ['Câmera',[v(271),v(272)].filter(Boolean).join(' ')],['Lente',v(42036)],
+        ['Distância focal',v(37386) && v(37386)+' mm'],['Equivalente em 35 mm',v(41989) && v(41989)+' mm'],
+        ['Abertura',v(33437) && 'ƒ/'+v(33437)],['Velocidade',shutter && (shutter<1 ? '1/'+Math.round(1/shutter) : shutter)+' s'],
+        ['ISO',v(34855)],['Zoom digital',v(41988) && v(41988)+'×']
+      ].filter(([,value])=>value);
+    }
+    p=end;
+  }
+  return [];
+}
+let cardFile, cardUrl, cardCaption, cardRequest = 0;
+async function previewCard(photo, caption) {
+  const request=++cardRequest;
+  if(cardUrl) URL.revokeObjectURL(cardUrl);
+  cardUrl=cardFile=null;
+  cardCaption=caption;
+  byId('card-image').removeAttribute('src');
+  byId('card-share').disabled=true;
+  byId('card-download').disabled=true;
+  byId('card-status').textContent='Preparando cartão…';
+  byId('card-dialog').showModal();
+  try {
+    await photo.decode();
+    const canvas=document.createElement('canvas');
+    const scale=Math.min(1,1600/Math.max(photo.naturalWidth,photo.naturalHeight));
+    const width=Math.max(1,Math.round(photo.naturalWidth*scale));
+    const height=Math.max(1,Math.round(photo.naturalHeight*scale));
+    const ctx=canvas.getContext('2d');
+    canvas.width=Math.max(600,width);
+    const unit=canvas.width/36;
+    const lines=[];
+    ctx.font=unit+'px Georgia';
+    for (const word of caption.match(/\S+/gu)||[]) {
+      const previous=lines.at(-1);
+      if(previous && ctx.measureText(previous+' '+word).width<canvas.width-2*unit) lines[lines.length-1]+=' '+word;
+      else lines.push(word);
+    }
+    canvas.height=height+Math.ceil(unit*(3.5+Math.min(lines.length,6)*1.45));
+    ctx.fillStyle='#17171b';ctx.fillRect(0,0,canvas.width,canvas.height);
+    ctx.drawImage(photo,(canvas.width-width)/2,0,width,height);
+    ctx.font=unit+'px Georgia';ctx.fillStyle='#dddde5';
+    lines.slice(0,6).forEach((line,i)=>ctx.fillText(i===5&&lines.length>6?line+'…':line,unit,height+unit*(1.45+i*1.45),canvas.width-2*unit));
+    const y=canvas.height-unit;
+    ctx.font=unit*1.25+'px system-ui';
+    ctx.fillText('Photo',unit,y);
+    const offset=ctx.measureText('Photo').width;
+    ctx.font='italic '+unit*1.45+'px Georgia';ctx.fillStyle='#e9c27e';
+    ctx.fillText('Sfera',unit+offset,y);
+    const blob=await new Promise(resolve=>canvas.toBlob(resolve,'image/jpeg',.92));
+    if(request!==cardRequest || !byId('card-dialog').open) return;
+    if(!blob) throw Error('JPEG');
+    cardFile=new File([blob],'PhotoSfera.jpg',{type:'image/jpeg'});
+    cardUrl=URL.createObjectURL(cardFile);
+    byId('card-image').src=cardUrl;
+    byId('card-share').disabled=false;
+    byId('card-download').disabled=false;
+    byId('card-status').textContent='';
+  } catch { if(request===cardRequest) byId('card-status').textContent='Não foi possível gerar o cartão desta foto.'; }
+}
+function downloadCard() {
+  if(!cardUrl) return;
+  const link=document.createElement('a');
+  link.href=cardUrl;link.download=cardFile.name;link.click();
+}
+byId('card-download').onclick=downloadCard;
+byId('card-share').onclick=async()=>{
+  if(!cardFile) return;
+  const payload={files:[cardFile],text:[cardCaption,inviteUrl].filter(Boolean).join('\n')};
+  try {
+    if(navigator.canShare?.(payload)){await navigator.share(payload);return;}
+  } catch(error){if(error.name==='AbortError')return;}
+  downloadCard();
+  byId('card-status').textContent='Cartão baixado. Anexe a imagem na conversa.';
+};
+
+function showPost({file, caption, composition}) {
   const isVideo = file.type.startsWith('video/');
   const post = publication(URL.createObjectURL(file), isVideo, caption);
   const share = document.createElement('button');
@@ -264,7 +394,15 @@ function showPost({file, caption}) {
     download.click();
     status.textContent = 'Arquivo baixado para anexar à conversa.';
   };
-  post.querySelector('.comments').before(share, status);
+  if (!isVideo) {
+    share.textContent='Compartilhar cartão';
+    share.onclick=()=>previewCard(post.querySelector('img.media'),caption);
+    photoDetails(file,composition,post);
+  }
+  const actions=document.createElement('div');
+  actions.className='post-actions';
+  post.querySelector('.comments').before(actions,status);
+  actions.append(post.querySelector('.impression'),share);
   byId('local').prepend(post);
   const link = document.createElement('button');
   link.className = 'action';
@@ -291,7 +429,7 @@ byId('composer').onsubmit = async event => {
   const submit = form.querySelector('button[type="submit"], button');
   playShutter();
   submit.disabled = true;
-  const record = {file, caption: data.get('caption').trim()};
+  const record = {file, caption: data.get('caption').trim(), composition: file.type.startsWith('image/') ? data.get('composition').trim() : ''};
   try {
     await restored;
     await posts('readwrite', store => store.add(record));
