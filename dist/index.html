@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#141417"><title>PhotoSfera</title><link rel="icon" type="image/png" href="https://joaofaustinojr.github.io/JoaoFaustinoJr-PhotoSfera/obturador.png"><link rel="apple-touch-icon" href="https://joaofaustinojr.github.io/JoaoFaustinoJr-PhotoSfera/obturador.png"><meta property="og:title" content="PhotoSfera"><meta property="og:description" content="Compartilhe fotos, vídeos e momentos."><meta property="og:image" content="https://joaofaustinojr.github.io/JoaoFaustinoJr-PhotoSfera/obturador.png"><meta name="twitter:card" content="summary">
+<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#141417"><title>PhotoSfera</title><link rel="manifest" href="./manifest.webmanifest"><link rel="icon" type="image/png" href="https://joaofaustinojr.github.io/JoaoFaustinoJr-PhotoSfera/obturador.png"><link rel="apple-touch-icon" href="https://joaofaustinojr.github.io/JoaoFaustinoJr-PhotoSfera/obturador.png"><meta property="og:title" content="PhotoSfera"><meta property="og:description" content="Compartilhe fotos, vídeos e momentos."><meta property="og:image" content="https://joaofaustinojr.github.io/JoaoFaustinoJr-PhotoSfera/obturador.png"><meta name="twitter:card" content="summary">
 <style>
 *{box-sizing:border-box}html{color-scheme:dark}body{margin:0;background:#141417;color:#e6e4e6;font:16px system-ui,sans-serif}header,main,nav{width:min(100%,680px);margin:auto}header{padding:22px;text-align:center;border-bottom:1px solid #38363b}@font-face{font-family:Sfera;src:url(sfera.woff) format("woff");font-display:swap}
 .wordmark{display:inline-flex;align-items:baseline;white-space:nowrap;padding:0 .12em .09em 0;font-size:clamp(30px,15.5cqw,88px);line-height:1.05}
@@ -35,7 +35,7 @@ details{margin:12px 0;color:#c8c5cd}summary{cursor:pointer;padding:8px 0;color:#
 <div class="pad"><p class="caption">A serra antes de acordar.</p><button class="action gold impression" type="button">Deixar uma impressão</button><div class="comments" aria-live="polite"></div></div></article>
 </section>
 <section id="publish" class="pad" hidden><h2>Publicar</h2><p class="muted">As publicações ficam salvas neste navegador.</p><form id="composer"><label>Foto ou vídeo<input name="file" type="file" accept="image/*,video/*" required></label><label>Legenda<textarea name="caption" rows="3" maxlength="400"></textarea></label><label>Nota de composição (opcional)<textarea name="composition" rows="2" maxlength="400" placeholder="O que orientou seu enquadramento?"></textarea></label><button class="action gold">Publicar neste aparelho</button><p id="notice" role="status"></p></form></section>
-<section id="profile" class="pad" hidden><h2 id="profile-name">Meu perfil</h2><img id="profile-photo" width="64" height="64" alt="Foto do perfil" hidden style="border-radius:50%;object-fit:cover;margin-top:10px"><div class="share-row"><button class="action" id="edit-profile">Editar perfil</button><button class="action" id="copy-invite">Copiar link</button></div><div class="share-row"><button class="action" id="invite">Convidar amigos</button><button class="action" id="shutter-sound" aria-pressed="true">Som do obturador</button></div><p id="invite-status" class="share-status muted" role="status"></p><p id="empty" class="muted">Suas publicações da prévia aparecem aqui.</p><div id="mine"></div></section>
+<section id="profile" class="pad" hidden><h2 id="profile-name">Meu perfil</h2><img id="profile-photo" width="64" height="64" alt="Foto do perfil" hidden style="border-radius:50%;object-fit:cover;margin-top:10px"><div class="share-row"><button class="action" id="edit-profile">Editar perfil</button><button class="action" id="copy-invite">Copiar link</button></div><div class="share-row"><button class="action" id="invite">Compartilhar app</button><button class="action" id="install-app">Instalar app</button><button class="action" id="shutter-sound" aria-pressed="true">Som do obturador</button></div><p id="invite-status" class="share-status muted" role="status"></p><p id="empty" class="muted">Suas publicações da prévia aparecem aqui.</p><div id="mine"></div></section>
 </main>
 <nav class="bottom" aria-label="Navegação principal"><button data-view="feed" aria-current="page"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5V21h-6v-6H9v6H3z"/></svg>Feed</button><button data-view="publish"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5"/><path d="M12 8v8m-4-4h8"/></svg>Publicar</button><button data-view="profile"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21v-2a8 8 0 0 1 16 0v2"/></svg>Perfil</button></nav>
 <dialog id="card-dialog" aria-label="Prévia do cartão PhotoSfera"><div class="dialogbar"><h2>Cartão PhotoSfera</h2><form method="dialog"><button class="action">Fechar</button></form></div><img class="moment" id="card-image" alt="Prévia do cartão assinado"><p id="card-status" role="status"></p><div class="share-row"><button class="action gold" id="card-share">Compartilhar</button><button class="action" id="card-download">Baixar cartão</button></div></dialog><dialog id="profile-editor"><form id="profile-form"><h2>Editar perfil</h2><label>Nome<input name="name" required maxlength="60"></label><label>Foto de perfil<input name="photo" type="file" accept="image/*"></label><p id="profile-status" role="status"></p><button class="action gold">Salvar perfil</button> <button class="action" type="button" id="cancel-profile">Cancelar</button></form></dialog><dialog id="moment"><div class="dialogbar"><h2 id="momentTitle"></h2><form method="dialog"><button class="action">Fechar</button></form></div><img class="moment" id="momentImage" alt=""><div class="row"><button class="action" id="previous">Anterior</button><button class="action" id="next">Próxima</button></div><p class="muted">Prévia ilustrativa</p></dialog>
@@ -184,7 +184,7 @@ async function posts(mode, action) {
     transaction.onabort = () => reject(transaction.error);
   });
 }
-const inviteUrl = new URL('../?convite=2', location.href).href;
+const inviteUrl = new URL('./', location.href).href;
 async function copyInvite() {
   const status = byId('invite-status');
   try {
@@ -443,4 +443,27 @@ byId('composer').onsubmit = async event => {
     submit.disabled = false;
   }
 };
+let installPrompt;
+const installButton = byId('install-app');
+window.addEventListener('beforeinstallprompt', event => {
+  event.preventDefault();
+  installPrompt = event;
+});
+function hideInstalled() { installButton.hidden = true; }
+if (matchMedia('(display-mode: standalone)').matches || navigator.standalone) hideInstalled();
+window.addEventListener('appinstalled', hideInstalled);
+installButton.onclick = async () => {
+  if (installPrompt) {
+    const prompt = installPrompt;
+    installPrompt = null;
+    try {
+      await prompt.prompt();
+      return;
+    } catch {}
+  }
+  byId('invite-status').textContent = /iPhone|iPad/i.test(navigator.userAgent)
+    ? 'No Safari, toque em Compartilhar → Adicionar à Tela de Início.'
+    : 'Abra no Chrome e escolha Instalar app ou Adicionar à tela inicial no menu.';
+};
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').catch(() => {});
 </script></body></html>
