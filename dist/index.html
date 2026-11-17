@@ -24,11 +24,18 @@ img.media{height:auto;max-height:none}
 .impression:hover{text-decoration:underline;text-underline-offset:4px}
 .wordmark em::after{content:"";position:absolute;pointer-events:none;left:52%;top:48%;width:.48em;height:.48em;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle,#fff8e4 0%,#f7d697dd 13%,#e0af6277 32%,transparent 71%);z-index:-1}
 .share-row{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}.share-status:empty{display:none}
-details{margin:12px 0;color:#c8c5cd}summary{cursor:pointer;padding:8px 0;color:#e0bc81}details p{font-size:.9rem} .post-actions{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px}</style></head><body>
+details{margin:12px 0;color:#c8c5cd}summary{cursor:pointer;padding:8px 0;color:#e0bc81}details p{font-size:.9rem} .post-actions{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px}
+.story-strip{display:flex;gap:12px;overflow-x:auto;padding:14px 16px;scrollbar-width:thin;scroll-snap-type:x proximity;border-bottom:1px solid #ffffff20}
+.story-strip[hidden],#local article[hidden],#received-photos article[hidden]{display:none}
+.story{display:grid;justify-items:center;gap:5px;flex:0 0 76px;min-width:0;border:0;background:none;color:inherit;font:inherit;cursor:pointer;scroll-snap-align:start;padding:3px 0}
+.story img{width:64px;height:64px;object-fit:cover;border-radius:50%;border:2px solid #69616a;padding:3px}
+.story[aria-pressed=true] img{border-color:#e9ba70;box-shadow:0 0 0 1px #e9ba70}
+.story span{width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:.78rem}
+</style></head><body>
 <header><div class="wordmark" aria-label="PhotoSfera"><span class="wordmark-photo">Photo</span><em>Sfera</em></div></header>
 <main>
 <section id="feed" aria-label="Feed">
-<div id="received-photos"></div><div id="local"></div><p id="feed-empty" class="pad muted" role="status">Carregando publicações…</p>
+<div id="story-strip" class="story-strip" role="group" aria-label="Últimas fotos" hidden></div><div id="received-photos"></div><div id="local"></div><p id="feed-empty" class="pad muted" role="status">Carregando publicações…</p>
 </section>
 <section id="publish" class="pad" hidden><h2>Publicar</h2><p class="muted">Fotos aparecem no feed dos seus contatos. Vídeos ficam neste aparelho.</p><form id="composer"><label>Foto ou vídeo<input name="file" type="file" accept="image/*,video/*" required></label><label>Legenda<textarea name="caption" rows="3" maxlength="400"></textarea></label><label>Nota de composição (opcional)<textarea name="composition" rows="2" maxlength="400" placeholder="O que orientou seu enquadramento?"></textarea></label><button class="action gold">Publicar</button><p id="notice" role="status"></p></form></section>
 <section id="profile" class="pad" hidden><h2 id="profile-name">Meu perfil</h2><img id="profile-photo" width="64" height="64" alt="Foto do perfil" hidden style="border-radius:50%;object-fit:cover;margin-top:10px"><div class="share-row"><button class="action" id="edit-profile">Editar perfil</button></div><div class="share-row"><button class="action" id="invite">Compartilhar app</button><button class="action" id="install-app">Instalar app</button><button class="action" id="shutter-sound" aria-pressed="true">Som do obturador</button></div><p id="invite-status" class="share-status muted" role="status"></p><h3>Conexões</h3><div class="share-row"><button class="action gold" id="copy-invite">Criar convite</button><button class="action gold" id="accept-invite" hidden>Ver convite recebido</button></div><input id="connection-link" aria-label="Link para conectar" readonly hidden><p id="connection-status" class="muted" role="status"></p><p id="connections-list" class="muted">Você ainda não tem conexões.</p><p id="empty" class="muted">Suas publicações da prévia aparecem aqui.</p><div id="mine"></div></section>
@@ -136,6 +143,7 @@ profileForm.onsubmit = async event => {
     localStorage.setItem('photosfera-profile',JSON.stringify({name,photo}));
     profile = {name,photo};
     showProfile();
+    renderStories();
     editor.close();
   } catch { byId('profile-status').textContent = 'Não foi possível salvar. Tente uma foto JPG ou PNG.'; }
   finally { save.disabled = false; }
@@ -193,22 +201,73 @@ function connectionError(error) {
     invalid_photo: 'Não foi possível preparar a foto. Tente outra imagem.'
   }[error.message] || 'Não foi possível acessar as conexões. Tente novamente.';
 }
+let selectedPost;
+let selectedContact;
+function highlightPost(post, contact = null) {
+  const previous = selectedPost;
+  if (previous !== post) previous?.querySelector('video')?.pause();
+  selectedPost = post;
+  selectedContact = contact;
+  for (const article of document.querySelectorAll('#local article, #received-photos article')) {
+    article.hidden = article !== post;
+  }
+  for (const button of byId('story-strip').children) {
+    button.setAttribute('aria-pressed', String(button.dataset.contact === (contact || (post?.parentElement.id === 'local' ? 'me' : ''))));
+  }
+}
+function renderStories() {
+  const strip = byId('story-strip');
+  const local = byId('local');
+  const received = byId('received-photos');
+  const ownPhoto = local.querySelector('article img.media')?.closest('article');
+  const stories = [...received.children].map(article => ({
+    article, contact: article.dataset.contact, name: article.querySelector('.author').textContent
+  }));
+  if (ownPhoto) stories.unshift({article: ownPhoto, contact: 'me', name: profile.name || 'Você'});
+  strip.replaceChildren(...stories.map(({article, contact, name}) => {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'story';
+    button.dataset.contact = contact;
+    button.title = name;
+    const image = document.createElement('img');
+    image.src = article.querySelector('.media').src;
+    image.alt = '';
+    const label = document.createElement('span');
+    label.textContent = name;
+    button.append(image, label);
+    button.onclick = () => highlightPost(article, contact === 'me' ? null : contact);
+    return button;
+  }));
+  strip.hidden = !stories.length;
+  const matchingContact = stories.find(story => story.contact === selectedContact);
+  if (matchingContact) highlightPost(matchingContact.article, matchingContact.contact);
+  else if (selectedPost?.parentElement === local) highlightPost(selectedPost);
+  else {
+    const latestContact = stories.find(story => story.contact !== 'me');
+    const fallback = ownPhoto || latestContact?.article || local.firstElementChild;
+    highlightPost(fallback, fallback === latestContact?.article ? latestContact?.contact : null);
+  }
+}
 async function refreshConnections() {
   if (!connectionSecret) return;
-  const [contacts, photos] = await Promise.all([connection('contacts'), connection('feed')]);
+  const [contacts, photos] = await Promise.all([connection('contacts'), connection('stories')]);
   byId('connections-list').textContent = contacts.length
     ? contacts.map(contact => contact.name).join(' · ') : 'Você ainda não tem conexões.';
   const received = byId('received-photos');
-  if (received.dataset.ids === photos.map(photo => photo.id).join(',')) return;
-  received.dataset.ids = photos.map(photo => photo.id).join(',');
+  const signature = JSON.stringify(photos.map(({sender,id,name}) => [sender,id,name]));
+  if (received.dataset.ids === signature) return;
+  received.dataset.ids = signature;
   received.replaceChildren(...photos.map(photo => {
     const article = publication(photo.image, false, photo.caption);
+    article.dataset.contact = photo.sender;
     const author = article.querySelector('.author');
     author.classList.remove('local-author');
     author.textContent = photo.name;
     article.querySelector('.impression').remove();
     return article;
   }));
+  renderStories();
   byId('feed-empty').hidden = Boolean(photos.length || byId('local').children.length);
 }
 byId('copy-invite').onclick = async event => {
@@ -513,6 +572,7 @@ function showPost({file, caption, composition}) {
   link.textContent = caption || (isVideo ? 'Meu vídeo' : 'Minha foto');
   link.onclick = () => {
     openView('feed');
+    highlightPost(post);
     post.scrollIntoView();
   };
   byId('mine').prepend(link);
@@ -521,6 +581,11 @@ function showPost({file, caption, composition}) {
 }
 const restored = posts('readonly', store => store.getAll()).then(records => {
   records.forEach(showPost);
+  if (selectedPost?.parentElement !== byId('local')) {
+    selectedPost = null;
+    selectedContact = null;
+  }
+  renderStories();
   if (!records.length && !byId('received-photos').children.length) byId('feed-empty').textContent = 'Seu feed está vazio. Toque em Publicar para adicionar uma foto ou um vídeo.';
 }).catch(() => {
   byId('feed-empty').textContent = 'Não foi possível carregar suas publicações.';
@@ -543,6 +608,8 @@ byId('composer').onsubmit = async event => {
     await restored;
     await posts('readwrite', store => store.add(record));
     const post = showPost(record);
+    highlightPost(post);
+    renderStories();
     form.reset();
     byId('notice').textContent = '';
     openView('feed');
