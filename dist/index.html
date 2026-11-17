@@ -39,7 +39,7 @@ details{margin:12px 0;color:#c8c5cd}summary{cursor:pointer;padding:8px 0;color:#
 
 
 #feed{position:relative;isolation:isolate;overflow:clip;min-height:calc(100dvh - 165px)}
-.feed-watermark{position:absolute;z-index:-1;inset-inline-end:clamp(-170px,-22vw,-56px);bottom:-65px;width:clamp(250px,78vw,520px);aspect-ratio:1;opacity:.085;filter:grayscale(1);pointer-events:none}
+.feed-watermark{position:absolute;z-index:-1;inset-inline-end:clamp(-170px,-22vw,-56px);bottom:-65px;width:clamp(250px,78vw,520px);aspect-ratio:1;opacity:.11;filter:grayscale(1);pointer-events:none}
 
 .story-strip{gap:clamp(10px,4vw,26px);padding:10px 16px;border-bottom:0}
 .story{flex-basis:clamp(76px,24vw,104px);gap:4px}
@@ -66,7 +66,7 @@ details{margin:12px 0;color:#c8c5cd}summary{cursor:pointer;padding:8px 0;color:#
 .feed-tools-status:empty{display:none}
 
 header{background:#1a1a1c;border-bottom:0;padding:10px 16px 6px}
-#feed{background:#1a1a1c;min-height:0}
+#feed{background:#1a1a1c;min-height:calc(100dvh - 150px);padding-bottom:8px}
 .feed-heading{display:flex;align-items:center;justify-content:center;gap:10px;padding:3px 12% 7px;color:#b8b6b9;font-size:.68rem;letter-spacing:.18em;text-transform:uppercase}
 .feed-heading::before,.feed-heading::after{content:"";flex:1;height:1px;background:#ffffff28}
 .story-strip{gap:10px;padding:5px 6% 8px}
@@ -89,11 +89,14 @@ header{background:#1a1a1c;border-bottom:0;padding:10px 16px 6px}
 .profile-icon::before{content:"";position:absolute;left:3px;top:-7px;width:4px;height:4px;border:1px solid currentColor;border-radius:50%}
 .download-icon{border-bottom:1px solid currentColor;line-height:1}
 .bottom [aria-current=page]::after{content:"";display:block;width:19px;height:2px;background:#e9c470;margin:4px auto 0;border-radius:2px}
-.brand-mockup{display:block;width:min(70%,380px);height:auto;margin:auto;mask-image:linear-gradient(to right,transparent,#000 3%,#000 97%,transparent),linear-gradient(to bottom,transparent,#000 7%,#000 93%,transparent);mask-composite:intersect}
+.brand-mockup{display:block;width:100%;height:auto;mask-image:linear-gradient(to right,transparent,#000 3%,#000 97%,transparent),linear-gradient(to bottom,transparent,#000 7%,#000 93%,transparent);mask-composite:intersect}
+.brand-lockup{position:relative;width:min(70%,380px);margin:auto}
+.optical-star{position:absolute;left:15%;top:57%;width:5.5%;aspect-ratio:1;translate:-50% -50%;pointer-events:none;background:radial-gradient(circle,#fff 0%,#fff9 10%,#ecebdb44 27%,transparent 59%)}
+.optical-star::after{content:"";position:absolute;inset:11%;background:#fff;clip-path:polygon(50% 0,56% 44%,100% 50%,56% 56%,50% 100%,44% 56%,0 50%,44% 44%);filter:drop-shadow(0 0 1px #fff)}
 </style></head><body>
-<header><img class="brand-mockup" src="./marca-photosphera.webp" width="600" height="131" alt="PhotoSphera"></header>
+<header><div class="brand-lockup"><img class="brand-mockup" src="./marca-photosphera.webp" width="600" height="131" alt="PhotoSphera"><span class="optical-star" aria-hidden="true"></span></div></header>
 <main>
-<section id="feed" aria-label="Feed"><div class="feed-heading">Publicações</div>
+<section id="feed" aria-label="Feed"><span class="lens feed-watermark" aria-hidden="true"></span><div class="feed-heading">Publicações</div>
 <div id="story-strip" class="story-strip" role="group" aria-label="Últimas fotos" hidden></div><div id="received-photos"></div><div id="local"></div><p id="feed-empty" class="pad muted" role="status">Carregando publicações…</p><div class="feed-tools"><button class="action" id="feed-edit-profile" type="button"> <span class="tool-icon profile-icon" aria-hidden="true"></span>Editar perfil</button><button class="action" id="feed-install-app" type="button"><span class="tool-icon download-icon" aria-hidden="true">↓</span>Instalar app</button></div><p class="feed-tools-status muted" id="feed-tools-status" role="status"></p>
 </section>
 <section id="publish" class="pad" hidden><h2>Publicar</h2><p class="muted">Fotos aparecem no feed dos seus contatos. Vídeos ficam neste aparelho.</p><form id="composer"><label>Foto ou vídeo<input name="file" type="file" accept="image/*,video/*" required></label><label>Legenda<textarea name="caption" rows="3" maxlength="400"></textarea></label><label>Nota de composição (opcional)<textarea name="composition" rows="2" maxlength="400" placeholder="O que orientou seu enquadramento?"></textarea></label><button class="action gold">Publicar</button><p id="notice" role="status"></p></form></section>
