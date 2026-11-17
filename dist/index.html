@@ -34,7 +34,11 @@ details{margin:12px 0;color:#c8c5cd}summary{cursor:pointer;padding:8px 0;color:#
 .capture-summary{margin:4px 0 0;color:#c6bbc0;font: .78rem/1.5 ui-monospace,monospace;font-variant-numeric:tabular-nums}
 .post-actions{gap:4px 12px}
 .post-actions .action{font-size:.86rem;padding:8px 11px;min-height:44px}
-.post-actions .impression{padding-inline:0}
+.post-actions .action{padding-inline:0;border:0;border-radius:4px;background:transparent;color:#d5b783}
+.post-actions .action:hover{text-decoration:underline;text-underline-offset:4px}
+.post-publishing{margin-top:4px}
+.post-publishing p{font-size:.82rem;margin:6px 0}
+.post-publishing:empty,.post-publishing p:empty{display:none}
 
 .wordmark{padding:4px 0}
 .wordmark em{isolation:isolate;font-style:italic}
@@ -558,7 +562,8 @@ byId('card-share').onclick=async()=>{
   byId('card-status').textContent='Cartão baixado. Anexe a imagem na conversa.';
 };
 
-function showPost({file, caption, composition}) {
+function showPost(record, key) {
+  const {file, caption, composition, publishedToContacts} = record;
   const isVideo = file.type.startsWith('video/');
   const post = publication(URL.createObjectURL(file), isVideo, caption);
   const share = document.createElement('button');
@@ -593,23 +598,35 @@ function showPost({file, caption, composition}) {
   post.querySelector('.comments').before(actions,status);
   actions.append(post.querySelector('.impression'),share);
   if (!isVideo) {
+    const publishing = document.createElement('div');
+    publishing.className = 'post-publishing';
+    const publicationStatus = document.createElement('p');
+    publicationStatus.className = 'muted';
+    publicationStatus.setAttribute('role', 'status');
+    status.after(publishing);
     const send = document.createElement('button');
     send.className = 'action publish-to-contacts';
     send.textContent = 'Publicar para os contatos';
+    send.hidden = Boolean(publishedToContacts);
+    if (publishedToContacts) publicationStatus.textContent = 'Visível aos contatos';
     send.onclick = async () => {
       send.disabled = true;
-      status.textContent = 'Publicando…';
+      publicationStatus.textContent = 'Publicando…';
       try {
         await publishToContacts(file, caption);
-        status.textContent = 'Visível aos contatos.';
+        publicationStatus.textContent = 'Visível aos contatos';
         send.hidden = true;
+        await posts('readwrite', store => store.put({...record, publishedToContacts: true}, key))
+          .catch(() => {
+            publicationStatus.textContent = 'Visível aos contatos. O status não foi salvo neste aparelho.';
+          });
       } catch (error) {
-        status.textContent = connectionError(error);
+        publicationStatus.textContent = connectionError(error);
       } finally {
         send.disabled = false;
       }
     };
-    actions.append(send);
+    publishing.append(send, publicationStatus);
   }
   byId('local').prepend(post);
   byId('feed-empty').hidden = true;
@@ -625,8 +642,12 @@ function showPost({file, caption, composition}) {
   byId('empty').hidden = true;
   return post;
 }
-const restored = posts('readonly', store => store.getAll()).then(records => {
-  records.forEach(showPost);
+let restoredKeys;
+const restored = posts('readonly', store => {
+  restoredKeys = store.getAllKeys();
+  return store.getAll();
+}).then(records => {
+  records.forEach((record, index) => showPost(record, restoredKeys.result[index]));
   if (selectedPost?.parentElement !== byId('local')) {
     selectedPost = null;
     selectedContact = null;
@@ -652,8 +673,8 @@ byId('composer').onsubmit = async event => {
   const record = {file, caption: data.get('caption').trim(), composition: file.type.startsWith('image/') ? data.get('composition').trim() : ''};
   try {
     await restored;
-    await posts('readwrite', store => store.add(record));
-    const post = showPost(record);
+    const key = await posts('readwrite', store => store.add(record));
+    const post = showPost(record, key);
     highlightPost(post);
     renderStories();
     form.reset();
