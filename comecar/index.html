@@ -73,11 +73,40 @@ details{margin:12px 0;color:#c8c5cd}summary{cursor:pointer;padding:8px 0;color:#
 .feed-tools .action{min-height:44px;background:#18181be6;border:1px solid #927740;color:#efd29a;font-size:.85rem}
 .feed-tools-status{margin:0 16px 10px;text-align:center;font-size:.82rem}
 .feed-tools-status:empty{display:none}
+
+header{background:#1a1a1c;border-bottom:0;padding:10px 16px 6px}
+#feed{background:#1a1a1c;min-height:0}
+.wordmark{font-size:clamp(29px,10.4cqw,48px)}
+.wordmark-photo .brand-p{font:italic 1.12em/1 Sfera,Georgia,serif;color:#e9c27e;isolation:isolate;margin-inline-start:.18em}
+#brand-aperture{width:1.35em;opacity:.95;top:49%;left:52%}
+.brand-p::after,.brand-star{top:51%;left:55%}
+.feed-heading{display:flex;align-items:center;justify-content:center;gap:10px;padding:3px 12% 7px;color:#b8b6b9;font-size:.68rem;letter-spacing:.18em;text-transform:uppercase}
+.feed-heading::before,.feed-heading::after{content:"";flex:1;height:1px;background:#ffffff28}
+.story-strip{gap:10px;padding:5px 6% 8px}
+.story{flex:0 0 calc((100% - 20px) / 3);max-width:116px;padding-inline:4px}
+.viewfinder{height:auto;aspect-ratio:100/70;padding:16% 5% 5%;filter:none!important}
+.viewfinder::before,.viewfinder::after{display:none}
+.viewfinder svg{position:absolute;inset:0;width:100%;height:100%;fill:none;stroke:var(--trim);stroke-width:1.5;stroke-linecap:round;pointer-events:none}
+.story[aria-pressed=true] .viewfinder{--trim:#eac263}
+#feed article .author{padding:4px 17px;min-height:49px}
+#feed article .pad{padding:5px 16px 0}
+#feed article .capture-summary{margin:0;font-size:.72rem}
+#feed article summary{min-height:34px}
+#feed article details:not(.photo-options) summary::before{content:"▤";margin-right:8px}
+#feed article summary::after{margin-left:auto}
+#feed article .photo-options summary{font-size:.74rem;color:#b9b5bf;border-bottom:0;min-height:24px}
+.feed-tools{gap:12px;margin:4px 16px 10px}
+.feed-tools .action{min-height:40px;min-width:111px;padding:6px 12px;background:none}
+.tool-icon{display:inline-block;margin-right:6px;color:#e9c470;vertical-align:middle}
+.profile-icon{width:12px;height:6px;border:1px solid currentColor;border-radius:6px 6px 2px 2px;position:relative;margin-top:5px}
+.profile-icon::before{content:"";position:absolute;left:3px;top:-7px;width:4px;height:4px;border:1px solid currentColor;border-radius:50%}
+.download-icon{border-bottom:1px solid currentColor;line-height:1}
+.bottom [aria-current=page]::after{content:"";display:block;width:19px;height:2px;background:#e9c470;margin:4px auto 0;border-radius:2px}
 </style></head><body>
-<header><div class="wordmark" role="img" aria-label="PhotoSphera"><span class="wordmark-photo" aria-hidden="true">Photo</span><em aria-hidden="true">S<span class="brand-p">p<span class="lens" id="brand-aperture"></span><span class="brand-star"></span></span>hera</em></div></header>
+<header><div class="wordmark" role="img" aria-label="PhotoSphera"><span class="wordmark-photo" aria-hidden="true"><span class="brand-p">p<span class="lens" id="brand-aperture"></span><span class="brand-star"></span></span>hoto</span><em aria-hidden="true">Sphera</em></div></header>
 <main>
-<section id="feed" aria-label="Feed"><span class="lens feed-watermark" aria-hidden="true"></span>
-<div id="story-strip" class="story-strip" role="group" aria-label="Últimas fotos" hidden></div><div id="received-photos"></div><div id="local"></div><p id="feed-empty" class="pad muted" role="status">Carregando publicações…</p><div class="feed-tools"><button class="action" id="feed-edit-profile" type="button">Editar perfil</button><button class="action" id="feed-install-app" type="button">Instalar app</button></div><p class="feed-tools-status muted" id="feed-tools-status" role="status"></p>
+<section id="feed" aria-label="Feed"><div class="feed-heading">Publicações</div>
+<div id="story-strip" class="story-strip" role="group" aria-label="Últimas fotos" hidden></div><div id="received-photos"></div><div id="local"></div><p id="feed-empty" class="pad muted" role="status">Carregando publicações…</p><div class="feed-tools"><button class="action" id="feed-edit-profile" type="button"> <span class="tool-icon profile-icon" aria-hidden="true"></span>Editar perfil</button><button class="action" id="feed-install-app" type="button"><span class="tool-icon download-icon" aria-hidden="true">↓</span>Instalar app</button></div><p class="feed-tools-status muted" id="feed-tools-status" role="status"></p>
 </section>
 <section id="publish" class="pad" hidden><h2>Publicar</h2><p class="muted">Fotos aparecem no feed dos seus contatos. Vídeos ficam neste aparelho.</p><form id="composer"><label>Foto ou vídeo<input name="file" type="file" accept="image/*,video/*" required></label><label>Legenda<textarea name="caption" rows="3" maxlength="400"></textarea></label><label>Nota de composição (opcional)<textarea name="composition" rows="2" maxlength="400" placeholder="O que orientou seu enquadramento?"></textarea></label><button class="action gold">Publicar</button><p id="notice" role="status"></p></form></section>
 <section id="profile" class="pad" hidden><h2 id="profile-name">Meu perfil</h2><img id="profile-photo" width="64" height="64" alt="Foto do perfil" hidden style="border-radius:50%;object-fit:cover;margin-top:10px"><div class="share-row"><button class="action" id="edit-profile">Editar perfil</button></div><div class="share-row"><button class="action" id="invite">Compartilhar app</button><button class="action" id="install-app">Instalar app</button><button class="action" id="shutter-sound" aria-pressed="true">Som do obturador</button></div><p id="invite-status" class="share-status muted" role="status"></p><h3>Conexões</h3><div class="share-row"><button class="action gold" id="copy-invite">Criar convite</button><button class="action gold" id="accept-invite" hidden>Ver convite recebido</button></div><input id="connection-link" aria-label="Link para conectar" readonly hidden><p id="connection-status" class="muted" role="status"></p><p id="connections-list" class="muted">Você ainda não tem conexões.</p><p id="empty" class="muted">Suas publicações da prévia aparecem aqui.</p><div id="mine"></div></section>
@@ -295,7 +324,14 @@ function renderStories() {
     viewfinder.className = 'viewfinder';
     const finish = contact === 'me' ? 'rangefinder' : ['rangefinder', 'instant', 'reflex'][index % 3];
     viewfinder.classList.add(finish);
-    viewfinder.append(image);
+    const outline = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    outline.setAttribute('viewBox', '0 0 100 70');
+    outline.setAttribute('preserveAspectRatio', 'none');
+    outline.setAttribute('aria-hidden', 'true');
+    const contour = document.createElementNS(outline.namespaceURI, 'path');
+    contour.setAttribute('d', 'M10 12h20q4 0 6-4l2-4q1-2 4-2h17q3 0 4 2l2 4q2 4 6 4h19q9 0 9 9v39q0 9-9 9H10q-9 0-9-9V21q0-9 9-9Zm3-4h12m51 0h12');
+    outline.append(contour);
+    viewfinder.append(image, outline);
     button.append(viewfinder, label);
     button.onclick = () => {
       if (selectedPost !== article && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
@@ -625,7 +661,12 @@ function showPost(record, key) {
   }
   const actions=document.createElement('div');
   actions.className='post-actions';
-  post.querySelector('.comments').before(actions,status);
+  const more = document.createElement('details');
+  more.className = 'photo-options';
+  const moreTitle = document.createElement('summary');
+  moreTitle.textContent = 'Ações da foto';
+  more.append(moreTitle, actions, status);
+  post.querySelector('.comments').before(more);
   actions.append(post.querySelector('.impression'),share);
   if (!isVideo) {
     const publishing = document.createElement('div');
@@ -633,7 +674,7 @@ function showPost(record, key) {
     const publicationStatus = document.createElement('p');
     publicationStatus.className = 'muted';
     publicationStatus.setAttribute('role', 'status');
-    status.after(publishing);
+    more.append(publishing);
     const send = document.createElement('button');
     send.className = 'action publish-to-contacts';
     send.textContent = 'Publicar para os contatos';
@@ -651,6 +692,7 @@ function showPost(record, key) {
             publicationStatus.textContent = 'Visível aos contatos. O status não foi salvo neste aparelho.';
           });
       } catch (error) {
+        more.open = true;
         publicationStatus.textContent = connectionError(error);
       } finally {
         send.disabled = false;
