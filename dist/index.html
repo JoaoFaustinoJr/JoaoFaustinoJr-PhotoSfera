@@ -30,11 +30,11 @@ details{margin:12px 0;color:#c8c5cd}summary{cursor:pointer;padding:8px 0;color:#
 <section id="feed" aria-label="Feed">
 <div id="received-photos"></div><div id="local"></div><p id="feed-empty" class="pad muted" role="status">Carregando publicações…</p>
 </section>
-<section id="publish" class="pad" hidden><h2>Publicar</h2><p class="muted">As publicações ficam salvas neste navegador.</p><form id="composer"><label>Foto ou vídeo<input name="file" type="file" accept="image/*,video/*" required></label><label>Legenda<textarea name="caption" rows="3" maxlength="400"></textarea></label><label>Nota de composição (opcional)<textarea name="composition" rows="2" maxlength="400" placeholder="O que orientou seu enquadramento?"></textarea></label><button class="action gold">Publicar neste aparelho</button><p id="notice" role="status"></p></form></section>
+<section id="publish" class="pad" hidden><h2>Publicar</h2><p class="muted">Fotos aparecem no feed dos seus contatos. Vídeos ficam neste aparelho.</p><form id="composer"><label>Foto ou vídeo<input name="file" type="file" accept="image/*,video/*" required></label><label>Legenda<textarea name="caption" rows="3" maxlength="400"></textarea></label><label>Nota de composição (opcional)<textarea name="composition" rows="2" maxlength="400" placeholder="O que orientou seu enquadramento?"></textarea></label><button class="action gold">Publicar</button><p id="notice" role="status"></p></form></section>
 <section id="profile" class="pad" hidden><h2 id="profile-name">Meu perfil</h2><img id="profile-photo" width="64" height="64" alt="Foto do perfil" hidden style="border-radius:50%;object-fit:cover;margin-top:10px"><div class="share-row"><button class="action" id="edit-profile">Editar perfil</button></div><div class="share-row"><button class="action" id="invite">Compartilhar app</button><button class="action" id="install-app">Instalar app</button><button class="action" id="shutter-sound" aria-pressed="true">Som do obturador</button></div><p id="invite-status" class="share-status muted" role="status"></p><h3>Conexões</h3><div class="share-row"><button class="action gold" id="copy-invite">Criar convite</button><button class="action gold" id="accept-invite" hidden>Ver convite recebido</button></div><input id="connection-link" aria-label="Link para conectar" readonly hidden><p id="connection-status" class="muted" role="status"></p><p id="connections-list" class="muted">Você ainda não tem conexões.</p><p id="empty" class="muted">Suas publicações da prévia aparecem aqui.</p><div id="mine"></div></section>
 </main>
 <nav class="bottom" aria-label="Navegação principal"><button data-view="feed" aria-current="page"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5V21h-6v-6H9v6H3z"/></svg>Feed</button><button data-view="publish"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5"/><path d="M12 8v8m-4-4h8"/></svg>Publicar</button><button data-view="profile"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21v-2a8 8 0 0 1 16 0v2"/></svg>Perfil</button></nav>
-<dialog id="connection-share" aria-label="Enviar foto a uma conexão"><div class="dialogbar"><h2>Enviar foto</h2><form method="dialog"><button class="action">Fechar</button></form></div><form id="connection-share-form" class="pad"><label>Para <select id="connection-recipient" required></select></label><button id="connection-send" class="action gold">Enviar foto</button><p id="connection-share-status" role="status"></p></form></dialog><dialog id="card-dialog" aria-label="Prévia do cartão PhotoSfera"><div class="dialogbar"><h2>Cartão PhotoSfera</h2><form method="dialog"><button class="action">Fechar</button></form></div><img class="moment" id="card-image" alt="Prévia do cartão assinado"><p id="card-status" role="status"></p><div class="share-row"><button class="action gold" id="card-share">Compartilhar</button><button class="action" id="card-download">Baixar cartão</button></div></dialog><dialog id="profile-editor"><form id="profile-form"><h2>Editar perfil</h2><label>Nome<input name="name" required maxlength="60"></label><label>Foto de perfil<input name="photo" type="file" accept="image/*"></label><p id="profile-status" role="status"></p><button class="action gold">Salvar perfil</button> <button class="action" type="button" id="cancel-profile">Cancelar</button></form></dialog>
+<dialog id="card-dialog" aria-label="Prévia do cartão PhotoSfera"><div class="dialogbar"><h2>Cartão PhotoSfera</h2><form method="dialog"><button class="action">Fechar</button></form></div><img class="moment" id="card-image" alt="Prévia do cartão assinado"><p id="card-status" role="status"></p><div class="share-row"><button class="action gold" id="card-share">Compartilhar</button><button class="action" id="card-download">Baixar cartão</button></div></dialog><dialog id="profile-editor"><form id="profile-form"><h2>Editar perfil</h2><label>Nome<input name="name" required maxlength="60"></label><label>Foto de perfil<input name="photo" type="file" accept="image/*"></label><p id="profile-status" role="status"></p><button class="action gold">Salvar perfil</button> <button class="action" type="button" id="cancel-profile">Cancelar</button></form></dialog>
 <dialog id="reply"><div class="dialogbar"><h2>Deixar uma impressão</h2><form method="dialog"><button class="action">Fechar</button></form></div><form id="commentForm"><label>Sua impressão<textarea name="comment" maxlength="300" rows="3" required></textarea></label><button class="action gold">Adicionar</button></form></dialog>
 <script>
 const byId = id => document.getElementById(id);
@@ -267,44 +267,21 @@ byId('accept-invite').onclick = async event => {
   } catch (error) { message.textContent = connectionError(error); }
   finally { button.disabled = false; }
 };
-const shareDialog = byId('connection-share');
-async function selectConnection(file, caption) {
-  const select = byId('connection-recipient');
-  const status = byId('connection-share-status');
-  const send = byId('connection-send');
-  send.disabled = true;
-  select.replaceChildren(new Option('Escolha uma conexão', ''));
-  status.textContent = 'Carregando conexões…';
-  shareDialog.showModal();
-  try {
-    const contacts = connectionSecret ? await connection('contacts') : [];
-    for (const contact of contacts) select.add(new Option(contact.name, contact.id));
-    status.textContent = contacts.length ? '' : 'Crie ou aceite um convite na aba Perfil.';
-    send.disabled = !contacts.length;
-  } catch (error) { status.textContent = connectionError(error); }
-  const id = crypto.randomUUID();
-  byId('connection-share-form').onsubmit = async event => {
-    event.preventDefault();
-    send.disabled = true;
-    try {
-      const bitmap = await createImageBitmap(file);
-      const canvas = document.createElement('canvas');
-      const scale = Math.min(1, 960 / Math.max(bitmap.width, bitmap.height));
-      canvas.width = Math.max(1, Math.round(bitmap.width * scale));
-      canvas.height = Math.max(1, Math.round(bitmap.height * scale));
-      canvas.getContext('2d').drawImage(bitmap, 0, 0, canvas.width, canvas.height);
-      bitmap.close();
-      let image = canvas.toDataURL('image/jpeg', 0.8);
-      if (image.length > 600000) image = canvas.toDataURL('image/jpeg', 0.55);
-      await connection('share', {id, recipient: select.value, image, caption});
-      status.textContent = 'Foto enviada para ' + select.selectedOptions[0].textContent + '.';
-      select.disabled = true;
-    } catch (error) {
-      status.textContent = connectionError(error);
-      send.disabled = false;
-    }
-  };
-  select.disabled = false;
+async function publishToContacts(file, caption) {
+  await prepareConnection();
+  const bitmap = await createImageBitmap(file);
+  const canvas = document.createElement('canvas');
+  const scale = Math.min(1, 960 / Math.max(bitmap.width, bitmap.height));
+  canvas.width = Math.max(1, Math.round(bitmap.width * scale));
+  canvas.height = Math.max(1, Math.round(bitmap.height * scale));
+  canvas.getContext('2d').drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+  bitmap.close();
+  let image = canvas.toDataURL('image/jpeg', 0.8);
+  if (image.length > 600000) image = canvas.toDataURL('image/jpeg', 0.55);
+  const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(JSON.stringify([image, caption])));
+  const hex = Array.from(new Uint8Array(digest), byte => byte.toString(16).padStart(2, '0')).join('');
+  const id = [hex.slice(0, 8), hex.slice(8, 12), hex.slice(12, 16), hex.slice(16, 20), hex.slice(20, 32)].join('-');
+  await connection('publish', {id, image, caption});
 }
 function reloadConnections() {
   if (document.hidden) return;
@@ -512,9 +489,21 @@ function showPost({file, caption, composition}) {
   actions.append(post.querySelector('.impression'),share);
   if (!isVideo) {
     const send = document.createElement('button');
-    send.className = 'action';
-    send.textContent = 'Enviar a uma conexão';
-    send.onclick = () => selectConnection(file, caption);
+    send.className = 'action publish-to-contacts';
+    send.textContent = 'Publicar para os contatos';
+    send.onclick = async () => {
+      send.disabled = true;
+      status.textContent = 'Publicando…';
+      try {
+        await publishToContacts(file, caption);
+        status.textContent = 'Foto publicada para seus contatos.';
+        send.hidden = true;
+      } catch (error) {
+        status.textContent = connectionError(error);
+      } finally {
+        send.disabled = false;
+      }
+    };
     actions.append(send);
   }
   byId('local').prepend(post);
@@ -528,6 +517,7 @@ function showPost({file, caption, composition}) {
   };
   byId('mine').prepend(link);
   byId('empty').hidden = true;
+  return post;
 }
 const restored = posts('readonly', store => store.getAll()).then(records => {
   records.forEach(showPost);
@@ -552,10 +542,13 @@ byId('composer').onsubmit = async event => {
   try {
     await restored;
     await posts('readwrite', store => store.add(record));
-    showPost(record);
+    const post = showPost(record);
     form.reset();
     byId('notice').textContent = '';
     openView('feed');
+    if (file.type.startsWith('image/')) {
+      post.querySelector('.publish-to-contacts').click();
+    }
   } catch {
     byId('notice').textContent = 'Não foi possível salvar neste navegador. Verifique o espaço disponível.';
   } finally {
