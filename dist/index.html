@@ -127,15 +127,51 @@ document.addEventListener('click', event => {
   byId('commentForm').reset();
   byId('reply').showModal();
 });
-byId('commentForm').onsubmit = event => {
+async function impressions(article, body = null, request_id = null) {
+  if (!article.dataset.photoId || !article.dataset.sender) return;
+  const response = await fetch(connectionApi.replace('photosfera_connections','photosphera_impressions'), {
+    method:'POST', headers:{apikey:connectionKey,'Content-Type':'application/json'},
+    body:JSON.stringify({secret:connectionSecret,sender:article.dataset.sender,photo:article.dataset.photoId,body,request_id})
+  });
+  const data = await response.json();
+  if (!response.ok) throw new Error(data.message);
+  article.querySelector('.comments').replaceChildren(...data.map(item => {
+    const line = document.createElement('p');
+    line.textContent = item.name + ' · ' + item.body;
+    return line;
+  }));
+}
+byId('commentForm').onsubmit = async event => {
   event.preventDefault();
   const value = new FormData(event.currentTarget).get('comment').trim();
   if (!value) return;
-  const comment = document.createElement('p');
-  comment.textContent = 'Você · ' + value;
-  commentTarget.append(comment);
-  byId('reply').close();
+  const button = event.currentTarget.querySelector('button');
+  button.disabled = true;
+  const article = commentTarget.closest('article');
+  try {
+    if (article.dataset.photoId) await impressions(article, value, crypto.randomUUID());
+    else {
+      const comment = document.createElement('p');
+      comment.textContent = 'Você · ' + value;
+      commentTarget.append(comment);
+    }
+    byId('reply').close();
+  } catch {
+    let status = byId('impression-error');
+    if (!status) {
+      status = document.createElement('p');
+      status.id = 'impression-error';
+      status.setAttribute('role','status');
+      event.currentTarget.append(status);
+    }
+    status.textContent = 'Não foi possível enviar. Tente novamente.';
+  } finally { button.disabled = false; }
 };
+function connectImpressions(article, photo) {
+  article.dataset.sender = photo.sender;
+  article.dataset.photoId = photo.id;
+  impressions(article).catch(() => {});
+}
 function setAuthor(author, name, portrait) {
   const avatar = document.createElement('span');
   avatar.className = 'author-avatar';
@@ -361,7 +397,7 @@ async function openContactGallery(sender, name) {
         const article = publication(photo.image, false, photo.caption);
         article.querySelector('.author').classList.remove('local-author');
         setAuthor(article.querySelector('.author'), photo.name);
-        article.querySelector('.impression').remove();
+        connectImpressions(article, photo);
         renderPhotoDetails(photo.metadata?.rows, photo.metadata?.composition, article);
         content.append(article);
       }
@@ -395,7 +431,7 @@ async function refreshConnections() {
     const author = article.querySelector('.author');
     author.classList.remove('local-author');
     setAuthor(author, photo.name);
-    article.querySelector('.impression').remove();
+    connectImpressions(article, photo);
     return article;
   }));
   renderStories();
@@ -474,6 +510,7 @@ async function publishToContacts(file, caption, composition = '') {
   let rows = [];
   try { rows = await readExif(file); } catch {}
   await connection('publish', {id, image, caption, metadata: {rows, composition}});
+  return id;
 }
 function reloadConnections() {
   if (document.hidden) return;
@@ -723,7 +760,10 @@ function showPost(record, key) {
       send.disabled = true;
       publicationStatus.textContent = 'Publicando…';
       try {
-        await publishToContacts(file, caption, composition);
+        const id = await publishToContacts(file, caption, composition);
+        post.dataset.photoId = id;
+        const identity = await connection('identity');
+        connectImpressions(post, {sender:identity.id,id});
         publicationStatus.textContent = 'Visível aos contatos';
         send.hidden = true;
         await posts('readwrite', store => store.put({...record, publishedToContacts: true}, key))
@@ -762,7 +802,12 @@ const restored = posts('readonly', store => {
   (async () => {
     for (const record of records) {
       if (record.publishedToContacts && record.file.type.startsWith('image/')) {
-        try { await publishToContacts(record.file, record.caption, record.composition); } catch {}
+        try {
+          const id = await publishToContacts(record.file, record.caption, record.composition);
+          const identity = await connection('identity');
+          const article = byId('local').children[records.length - 1 - records.indexOf(record)];
+          if (article) connectImpressions(article, {sender:identity.id,id});
+        } catch {}
       }
     }
   })();
