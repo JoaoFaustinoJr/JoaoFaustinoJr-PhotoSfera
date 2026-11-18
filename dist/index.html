@@ -94,6 +94,7 @@ header{background:#1a1a1c;border-bottom:0;padding:10px 16px 6px}
 .optical-star{position:absolute;left:15%;top:57%;width:5.5%;aspect-ratio:1;translate:-50% -50%;pointer-events:none;background:radial-gradient(circle,#fff 0%,#fff9 10%,#ecebdb44 27%,transparent 59%)}
 .optical-star::after{content:"";position:absolute;inset:11%;background:#fff;clip-path:polygon(50% 0,56% 44%,100% 50%,56% 56%,50% 100%,44% 56%,0 50%,44% 44%);filter:drop-shadow(0 0 1px #fff)}
 #contact-gallery{max-width:min(96vw,680px);padding:14px}#gallery-content article{margin-bottom:18px}#gallery-content .media{max-height:65dvh;object-fit:contain}.contact-gallery{margin-top:8px}#received-photos .author{cursor:pointer}
+.impression{display:inline-flex;align-items:center;gap:7px}.impression::before{content:"♡";font-size:1.2rem}.comments p{font-size:.88rem;line-height:1.45;margin:6px 0}
 </style></head><body>
 <header><div class="brand-lockup"><img class="brand-mockup" src="./marca-photosphera.webp" width="600" height="131" alt="PhotoSphera"><span class="optical-star" aria-hidden="true"></span></div></header>
 <main>
@@ -125,6 +126,7 @@ document.addEventListener('click', event => {
   if (!trigger) return;
   commentTarget = trigger.closest('article').querySelector('.comments');
   byId('commentForm').reset();
+  byId('impression-error')?.remove();
   byId('reply').showModal();
 });
 async function impressions(article, body = null, request_id = null) {
@@ -569,7 +571,7 @@ function renderPhotoDetails(rows, note, post, panel) {
     const title = document.createElement('summary');
     title.textContent = 'Ficha fotográfica';
     panel.append(title);
-    post.querySelector('.pad').append(panel);
+    post.querySelector('.impression').before(panel);
   }
   rows = Array.isArray(rows) ? rows.filter(row => Array.isArray(row) && row.length === 2 && ['string','number'].includes(typeof row[1])) : [];
   const capture = new Map(rows);
@@ -743,7 +745,7 @@ function showPost(record, key) {
   moreTitle.textContent = 'Ações da foto';
   more.append(moreTitle, actions, status);
   post.querySelector('.comments').before(more);
-  actions.append(post.querySelector('.impression'),share);
+  actions.append(share);
   if (!isVideo) {
     const publishing = document.createElement('div');
     publishing.className = 'post-publishing';
