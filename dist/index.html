@@ -93,6 +93,7 @@ header{background:#1a1a1c;border-bottom:0;padding:10px 16px 6px}
 .brand-lockup{position:relative;width:min(70%,380px);margin:auto}
 .optical-star{position:absolute;left:15%;top:57%;width:5.5%;aspect-ratio:1;translate:-50% -50%;pointer-events:none;background:radial-gradient(circle,#fff 0%,#fff9 10%,#ecebdb44 27%,transparent 59%)}
 .optical-star::after{content:"";position:absolute;inset:11%;background:#fff;clip-path:polygon(50% 0,56% 44%,100% 50%,56% 56%,50% 100%,44% 56%,0 50%,44% 44%);filter:drop-shadow(0 0 1px #fff)}
+#contact-gallery{max-width:min(96vw,680px);padding:14px}#gallery-content article{margin-bottom:18px}#gallery-content .media{max-height:65dvh;object-fit:contain}.contact-gallery{margin-top:8px}#received-photos .author{cursor:pointer}
 </style></head><body>
 <header><div class="brand-lockup"><img class="brand-mockup" src="./marca-photosphera.webp" width="600" height="131" alt="PhotoSphera"><span class="optical-star" aria-hidden="true"></span></div></header>
 <main>
@@ -101,7 +102,7 @@ header{background:#1a1a1c;border-bottom:0;padding:10px 16px 6px}
 </section>
 <section id="publish" class="pad" hidden><h2>Publicar</h2><p class="muted">Fotos aparecem no feed dos seus contatos. Vídeos ficam neste aparelho.</p><form id="composer"><label>Foto ou vídeo<input name="file" type="file" accept="image/*,video/*" required></label><label>Legenda<textarea name="caption" rows="3" maxlength="400"></textarea></label><label>Nota de composição (opcional)<textarea name="composition" rows="2" maxlength="400" placeholder="O que orientou seu enquadramento?"></textarea></label><button class="action gold">Publicar</button><p id="notice" role="status"></p></form></section>
 <section id="profile" class="pad" hidden><h2 id="profile-name">Meu perfil</h2><img id="profile-photo" width="64" height="64" alt="Foto do perfil" hidden style="border-radius:50%;object-fit:cover;margin-top:10px"><div class="share-row"><button class="action" id="edit-profile">Editar perfil</button></div><div class="share-row"><button class="action" id="invite">Compartilhar app</button><button class="action" id="install-app">Instalar app</button><button class="action" id="shutter-sound" aria-pressed="true">Som do obturador</button></div><p id="invite-status" class="share-status muted" role="status"></p><h3>Conexões</h3><div class="share-row"><button class="action gold" id="copy-invite">Criar convite</button><button class="action gold" id="accept-invite" hidden>Ver convite recebido</button></div><input id="connection-link" aria-label="Link para conectar" readonly hidden><p id="connection-status" class="muted" role="status"></p><p id="connections-list" class="muted">Você ainda não tem conexões.</p><p id="empty" class="muted">Suas publicações da prévia aparecem aqui.</p><div id="mine"></div></section>
-</main>
+</main><dialog id="contact-gallery"><div class="dialogbar"><h2 id="gallery-title"></h2><form method="dialog"><button class="action">Fechar</button></form></div><div id="gallery-content"></div><p id="gallery-status" role="status"></p><button class="action" id="gallery-more">Carregar mais</button></dialog>
 <nav class="bottom" aria-label="Navegação principal"><button data-view="feed" aria-current="page"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5V21h-6v-6H9v6H3z"/></svg>Feed</button><button data-view="publish"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5"/><path d="M12 8v8m-4-4h8"/></svg>Publicar</button><button data-view="profile"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21v-2a8 8 0 0 1 16 0v2"/></svg>Perfil</button></nav>
 <dialog id="card-dialog" aria-label="Prévia do cartão PhotoSphera"><div class="dialogbar"><h2>Cartão PhotoSphera</h2><form method="dialog"><button class="action">Fechar</button></form></div><img class="moment" id="card-image" alt="Prévia do cartão assinado"><p id="card-status" role="status"></p><div class="share-row"><button class="action gold" id="card-share">Compartilhar</button><button class="action" id="card-download">Baixar cartão</button></div></dialog><dialog id="profile-editor"><form id="profile-form"><h2>Editar perfil</h2><label>Nome<input name="name" required maxlength="60"></label><label>Foto de perfil<input name="photo" type="file" accept="image/*"></label><p id="profile-status" role="status"></p><button class="action gold">Salvar perfil</button> <button class="action" type="button" id="cancel-profile">Cancelar</button></form></dialog>
 <dialog id="reply"><div class="dialogbar"><h2>Deixar uma impressão</h2><form method="dialog"><button class="action">Fechar</button></form></div><form id="commentForm"><label>Sua impressão<textarea name="comment" maxlength="300" rows="3" required></textarea></label><button class="action gold">Adicionar</button></form></dialog>
@@ -339,18 +340,58 @@ function renderStories() {
     highlightPost(fallback, fallback === latestContact?.article ? latestContact?.contact : null);
   }
 }
+let galleryRequest = 0;
+async function openContactGallery(sender, name) {
+  const request = ++galleryRequest;
+  const dialog = byId('contact-gallery');
+  const content = byId('gallery-content');
+  const more = byId('gallery-more');
+  byId('gallery-title').textContent = 'Publicações de ' + name;
+  content.replaceChildren();
+  let offset = 0;
+  if (!dialog.open) dialog.showModal();
+  more.hidden = false;
+  more.onclick = async () => {
+    more.disabled = true;
+    byId('gallery-status').textContent = 'Carregando…';
+    try {
+      const photos = await connection('gallery', {sender, offset});
+      if (request !== galleryRequest) return;
+      for (const photo of photos) {
+        const article = publication(photo.image, false, photo.caption);
+        article.querySelector('.author').classList.remove('local-author');
+        setAuthor(article.querySelector('.author'), photo.name);
+        article.querySelector('.impression').remove();
+        renderPhotoDetails(photo.metadata?.rows, photo.metadata?.composition, article);
+        content.append(article);
+      }
+      offset += photos.length;
+      more.hidden = photos.length < 12;
+      byId('gallery-status').textContent = offset ? '' : 'Nenhuma publicação disponível.';
+    } catch { byId('gallery-status').textContent = 'Não foi possível carregar. Tente novamente.'; }
+    finally { if (request === galleryRequest) more.disabled = false; }
+  };
+  more.onclick();
+}
 async function refreshConnections() {
   if (!connectionSecret) return;
   const [contacts, photos] = await Promise.all([connection('contacts'), connection('stories')]);
   byId('connections-list').textContent = contacts.length
     ? contacts.map(contact => contact.name).join(' · ') : 'Você ainda não tem conexões.';
   const received = byId('received-photos');
-  const signature = JSON.stringify(photos.map(({sender,id,name}) => [sender,id,name]));
+  const signature = JSON.stringify(photos.map(({sender,id,name,metadata}) => [sender,id,name,metadata]));
   if (received.dataset.ids === signature) return;
   received.dataset.ids = signature;
   received.replaceChildren(...photos.map(photo => {
     const article = publication(photo.image, false, photo.caption);
     article.dataset.contact = photo.sender;
+    renderPhotoDetails(photo.metadata?.rows, photo.metadata?.composition, article);
+    const profileButton = document.createElement('button');
+    profileButton.className = 'action contact-gallery';
+    profileButton.textContent = 'Ver publicações de ' + photo.name;
+    profileButton.onclick = () => openContactGallery(photo.sender, photo.name);
+    article.querySelector('.pad').append(profileButton);
+    article.querySelector('.author').onclick = profileButton.onclick;
     const author = article.querySelector('.author');
     author.classList.remove('local-author');
     setAuthor(author, photo.name);
@@ -416,7 +457,7 @@ byId('accept-invite').onclick = async event => {
   } catch (error) { message.textContent = connectionError(error); }
   finally { button.disabled = false; }
 };
-async function publishToContacts(file, caption) {
+async function publishToContacts(file, caption, composition = '') {
   await prepareConnection();
   const bitmap = await createImageBitmap(file);
   const canvas = document.createElement('canvas');
@@ -430,7 +471,9 @@ async function publishToContacts(file, caption) {
   const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(JSON.stringify([image, caption])));
   const hex = Array.from(new Uint8Array(digest), byte => byte.toString(16).padStart(2, '0')).join('');
   const id = [hex.slice(0, 8), hex.slice(8, 12), hex.slice(12, 16), hex.slice(16, 20), hex.slice(20, 32)].join('-');
-  await connection('publish', {id, image, caption});
+  let rows = [];
+  try { rows = await readExif(file); } catch {}
+  await connection('publish', {id, image, caption, metadata: {rows, composition}});
 }
 function reloadConnections() {
   if (document.hidden) return;
@@ -481,6 +524,17 @@ async function photoDetails(file, note, post) {
   post.querySelector('.impression').before(panel);
   let rows = [];
   try { rows = await readExif(file); } catch {}
+  renderPhotoDetails(rows, note, post, panel);
+}
+function renderPhotoDetails(rows, note, post, panel) {
+  if (!panel) {
+    panel = document.createElement('details');
+    const title = document.createElement('summary');
+    title.textContent = 'Ficha fotográfica';
+    panel.append(title);
+    post.querySelector('.pad').append(panel);
+  }
+  rows = Array.isArray(rows) ? rows.filter(row => Array.isArray(row) && row.length === 2 && ['string','number'].includes(typeof row[1])) : [];
   const capture = new Map(rows);
   const summary = [
     capture.get('Distância focal'), capture.get('Abertura'), capture.get('Velocidade'),
@@ -669,7 +723,7 @@ function showPost(record, key) {
       send.disabled = true;
       publicationStatus.textContent = 'Publicando…';
       try {
-        await publishToContacts(file, caption);
+        await publishToContacts(file, caption, composition);
         publicationStatus.textContent = 'Visível aos contatos';
         send.hidden = true;
         await posts('readwrite', store => store.put({...record, publishedToContacts: true}, key))
@@ -705,6 +759,13 @@ const restored = posts('readonly', store => {
   return store.getAll();
 }).then(records => {
   records.forEach((record, index) => showPost(record, restoredKeys.result[index]));
+  (async () => {
+    for (const record of records) {
+      if (record.publishedToContacts && record.file.type.startsWith('image/')) {
+        try { await publishToContacts(record.file, record.caption, record.composition); } catch {}
+      }
+    }
+  })();
   if (selectedPost?.parentElement !== byId('local')) {
     selectedPost = null;
     selectedContact = null;
