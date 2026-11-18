@@ -95,13 +95,30 @@ header{background:#1a1a1c;border-bottom:0;padding:10px 16px 6px}
 .optical-star::after{content:"";position:absolute;inset:11%;background:#fff;clip-path:polygon(50% 0,56% 44%,100% 50%,56% 56%,50% 100%,44% 56%,0 50%,44% 44%);filter:drop-shadow(0 0 1px #fff)}
 #contact-gallery{max-width:min(96vw,680px);padding:14px}#gallery-content article{margin-bottom:18px}#gallery-content .media{max-height:65dvh;object-fit:contain}.contact-gallery{margin-top:8px}#received-photos .author{cursor:pointer}
 .impression{display:inline-flex;align-items:center;gap:7px}.impression::before{content:"♡";font-size:1.2rem}.comments p{font-size:.88rem;line-height:1.45;margin:6px 0}
+.capture-actions{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}
+.capture-actions input[hidden],#soundtrack-field[hidden]{display:none}
+#capture-preview .media{max-height:46dvh;border-radius:8px;object-fit:contain}
+#soundtrack-field select{display:block;width:100%;margin-top:6px;padding:8px;color:inherit;background:#222126;border:1px solid #665b49;border-radius:7px;font:inherit}
+.photo-soundtrack{margin:8px 0;color:#d5b783}
+.photo-soundtrack audio{display:block;width:min(100%,320px);height:40px}
+.publication-soundtrack{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px}
 </style></head><body>
 <header><div class="brand-lockup"><img class="brand-mockup" src="../dist/marca-photosphera.webp" width="600" height="131" alt="PhotoSphera"><span class="optical-star" aria-hidden="true"></span></div></header>
 <main>
 <section id="feed" aria-label="Feed"><span class="lens feed-watermark" aria-hidden="true"></span><div class="feed-heading" id="feed-heading">Publicações</div>
 <div id="story-strip" class="story-strip" role="group" aria-label="Últimas fotos" hidden></div><div id="received-photos"></div><div id="demo-photos" hidden></div><div id="local"></div><p id="feed-empty" class="pad muted" role="status">Carregando publicações…</p><div class="feed-tools"><button class="action" id="feed-edit-profile" type="button"> <span class="tool-icon profile-icon" aria-hidden="true"></span>Editar perfil</button><button class="action" id="feed-install-app" type="button"><span class="tool-icon download-icon" aria-hidden="true">↓</span>Instalar app</button></div><p class="feed-tools-status muted" id="feed-tools-status" role="status"></p>
 </section>
-<section id="publish" class="pad" hidden><h2>Publicar</h2><p class="muted">Fotos aparecem no feed dos seus contatos. Vídeos ficam neste aparelho.</p><form id="composer"><label>Foto ou vídeo<input name="file" type="file" accept="image/*,video/*" required></label><label>Legenda<textarea name="caption" rows="3" maxlength="400"></textarea></label><label>Nota de composição (opcional)<textarea name="composition" rows="2" maxlength="400" placeholder="O que orientou seu enquadramento?"></textarea></label><button class="action gold">Publicar</button><p id="notice" role="status"></p></form></section>
+<section id="publish" class="pad" hidden><h2>Publicar</h2><p class="muted">Fotos aparecem no feed dos seus contatos. Vídeos ficam neste aparelho.</p><form id="composer"><div class="capture-actions">
+<button type="button" class="action gold" id="take-photo">Abrir câmera</button>
+<button type="button" class="action" id="choose-media">Escolher da galeria</button>
+<input id="camera-file" type="file" accept="image/*" capture="environment" hidden>
+<input id="gallery-file" type="file" accept="image/*,video/*" hidden>
+</div>
+<div id="capture-preview"></div>
+<label id="soundtrack-field" hidden>Trilha da foto
+<select name="soundtrack"><option value="">Sem música</option><option value="luz-suave">Luz suave</option><option value="horizonte">Horizonte</option></select>
+</label>
+<div id="soundtrack-preview"></div><label>Legenda<textarea name="caption" rows="3" maxlength="400"></textarea></label><label>Nota de composição (opcional)<textarea name="composition" rows="2" maxlength="400" placeholder="O que orientou seu enquadramento?"></textarea></label><button type="submit" class="action gold" disabled>Publicar</button><p id="notice" role="status"></p></form></section>
 <section id="profile" class="pad" hidden><h2 id="profile-name">Meu perfil</h2><img id="profile-photo" width="64" height="64" alt="Foto do perfil" hidden style="border-radius:50%;object-fit:cover;margin-top:10px"><div class="share-row"><button class="action" id="edit-profile">Editar perfil</button></div><div class="share-row"><button class="action" id="invite">Compartilhar app</button><button class="action" id="install-app">Instalar app</button><button class="action" id="shutter-sound" aria-pressed="true">Som do obturador</button></div><p id="invite-status" class="share-status muted" role="status"></p><h3>Conexões</h3><div class="share-row"><button class="action gold" id="copy-invite">Criar convite</button><button class="action gold" id="accept-invite" hidden>Ver convite recebido</button></div><input id="connection-link" aria-label="Link para conectar" readonly hidden><p id="connection-status" class="muted" role="status"></p><p id="connections-list" class="muted">Você ainda não tem conexões.</p><p id="empty" class="muted">Suas publicações da prévia aparecem aqui.</p><div id="mine"></div></section>
 </main><dialog id="contact-gallery"><div class="dialogbar"><h2 id="gallery-title"></h2><form method="dialog"><button class="action">Fechar</button></form></div><div id="gallery-content"></div><p id="gallery-status" role="status"></p><button class="action" id="gallery-more">Carregar mais</button></dialog>
 <nav class="bottom" aria-label="Navegação principal"><button data-view="feed" aria-current="page"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5V21h-6v-6H9v6H3z"/></svg>Feed</button><button data-view="publish"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5"/><path d="M12 8v8m-4-4h8"/></svg>Publicar</button><button data-view="profile"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21v-2a8 8 0 0 1 16 0v2"/></svg>Perfil</button></nav>
@@ -111,6 +128,7 @@ header{background:#1a1a1c;border-bottom:0;padding:10px 16px 6px}
 const byId = id => document.getElementById(id);
 const tabs = [...document.querySelectorAll('[data-view]')];
 function openView(view) {
+  document.querySelectorAll('audio, video').forEach(media => media.pause());
   for (const tab of tabs) {
     const selected = tab.dataset.view === view;
     byId(tab.dataset.view).hidden = !selected;
@@ -320,7 +338,7 @@ let selectedPost;
 let selectedContact;
 function highlightPost(post, contact = null) {
   const previous = selectedPost;
-  if (previous !== post) previous?.querySelector('video')?.pause();
+  if (previous !== post) previous?.querySelectorAll('video, audio').forEach(media => media.pause());
   selectedPost = post;
   selectedContact = contact;
   for (const article of document.querySelectorAll('#local article, #received-photos article, #demo-photos article')) {
@@ -423,6 +441,7 @@ async function openContactGallery(sender, name) {
         setAuthor(article.querySelector('.author'), photo.name);
         connectImpressions(article, photo);
         renderPhotoDetails(photo.metadata?.rows, photo.metadata?.composition, article);
+        addSoundtrack(article, photo.metadata?.soundtrack);
         content.append(article);
       }
       offset += photos.length;
@@ -446,6 +465,7 @@ async function refreshConnections() {
     const article = publication(photo.image, false, photo.caption);
     article.dataset.contact = photo.sender;
     renderPhotoDetails(photo.metadata?.rows, photo.metadata?.composition, article);
+    addSoundtrack(article, photo.metadata?.soundtrack);
     const profileButton = document.createElement('button');
     profileButton.className = 'action contact-gallery';
     profileButton.textContent = 'Ver publicações de ' + photo.name;
@@ -517,7 +537,7 @@ byId('accept-invite').onclick = async event => {
   } catch (error) { message.textContent = connectionError(error); }
   finally { button.disabled = false; }
 };
-async function publishToContacts(file, caption, composition = '') {
+async function publishToContacts(file, caption, composition = '', soundtrack = '') {
   await prepareConnection();
   const bitmap = await createImageBitmap(file);
   const canvas = document.createElement('canvas');
@@ -533,7 +553,7 @@ async function publishToContacts(file, caption, composition = '') {
   const id = [hex.slice(0, 8), hex.slice(8, 12), hex.slice(12, 16), hex.slice(16, 20), hex.slice(20, 32)].join('-');
   let rows = [];
   try { rows = await readExif(file); } catch {}
-  await connection('publish', {id, image, caption, metadata: {rows, composition}});
+  await connection('publish', {id, image, caption, metadata: {rows, composition, soundtrack}});
   return id;
 }
 function reloadConnections() {
@@ -729,7 +749,7 @@ byId('card-share').onclick=async()=>{
 };
 
 function showPost(record, key) {
-  const {file, caption, composition, publishedToContacts} = record;
+  const {file, caption, composition, publishedToContacts, soundtrack} = record;
   const isVideo = file.type.startsWith('video/');
   const post = publication(URL.createObjectURL(file), isVideo, caption);
   const share = document.createElement('button');
@@ -758,6 +778,7 @@ function showPost(record, key) {
     share.textContent='Compartilhar cartão';
     share.onclick=()=>previewCard(post.querySelector('img.media'),caption);
     photoDetails(file,composition,post);
+    addSoundtrack(post, soundtrack);
   }
   const actions=document.createElement('div');
   actions.className='post-actions';
@@ -784,7 +805,7 @@ function showPost(record, key) {
       send.disabled = true;
       publicationStatus.textContent = 'Publicando…';
       try {
-        const id = await publishToContacts(file, caption, composition);
+        const id = await publishToContacts(file, caption, composition, soundtrack);
         post.dataset.photoId = id;
         const identity = await connection('identity');
         connectImpressions(post, {sender:identity.id,id});
@@ -822,14 +843,14 @@ const restored = posts('readonly', store => {
   restoredKeys = store.getAllKeys();
   return store.getAll();
 }).then(records => {
-  records.forEach((record, index) => showPost(record, restoredKeys.result[index]));
+  const articles = records.map((record, index) => showPost(record, restoredKeys.result[index]));
   (async () => {
-    for (const record of records) {
+    for (const [index, record] of records.entries()) {
       if (record.publishedToContacts && record.file.type.startsWith('image/')) {
         try {
-          const id = await publishToContacts(record.file, record.caption, record.composition);
+          const id = await publishToContacts(record.file, record.caption, record.composition, record.soundtrack);
           const identity = await connection('identity');
-          const article = byId('local').children[records.length - 1 - records.indexOf(record)];
+          const article = articles[index];
           if (article) connectImpressions(article, {sender:identity.id,id});
         } catch {}
       }
@@ -845,19 +866,85 @@ const restored = posts('readonly', store => {
   byId('feed-empty').textContent = 'Não foi possível carregar suas publicações.';
   byId('notice').textContent = 'Não foi possível acessar as publicações deste navegador.';
 });
-byId('composer').onsubmit = async event => {
+const composer = byId('composer');
+const soundtrackNames = new Map([['luz-suave','Luz suave'], ['horizonte','Horizonte']]);
+function soundtrackPlayer(track) {
+  const audio = document.createElement('audio');
+  audio.controls = true;
+  audio.preload = 'none';
+  audio.src = '../dist/' + track + '.mp3';
+  audio.setAttribute('aria-label', soundtrackNames.get(track));
+  return audio;
+}
+function addSoundtrack(article, track) {
+  if (!soundtrackNames.has(track)) return;
+  const row = document.createElement('div');
+  row.className = 'photo-soundtrack publication-soundtrack';
+  const title = document.createElement('span');
+  title.textContent = '♫ ' + soundtrackNames.get(track);
+  row.append(title, soundtrackPlayer(track));
+  article.querySelector('.impression').before(row);
+}
+document.addEventListener('play', event => {
+  if (!(event.target instanceof HTMLMediaElement)) return;
+  document.querySelectorAll('audio, video').forEach(media => {
+    if (media !== event.target) media.pause();
+  });
+}, true);
+byId('contact-gallery').addEventListener('close', event => {
+  event.currentTarget.querySelectorAll('audio').forEach(audio => audio.pause());
+});
+const capturePreview = byId('capture-preview');
+let draftFile;
+let previewUrl;
+function showCapture(file) {
+  capturePreview.replaceChildren();
+  if (previewUrl) URL.revokeObjectURL(previewUrl);
+  previewUrl = null;
+  draftFile = file;
+  const isPhoto = Boolean(file?.type.startsWith('image/'));
+  byId('soundtrack-field').hidden = !isPhoto;
+  if (!isPhoto) composer.elements.soundtrack.value = '';
+  composer.elements.soundtrack.onchange();
+  composer.querySelector('[type=submit]').disabled = !file;
+  if (!file) return;
+  const preview = document.createElement(isPhoto ? 'img' : 'video');
+  preview.className = 'media';
+  if (isPhoto) preview.alt = 'Prévia da foto';
+  else { preview.controls = true; preview.playsInline = true; }
+  previewUrl = URL.createObjectURL(file);
+  preview.src = previewUrl;
+  capturePreview.append(preview);
+}
+composer.elements.soundtrack.onchange = () => {
+  const track = composer.elements.soundtrack.value;
+  const player = byId('soundtrack-preview');
+  player.className = 'photo-soundtrack';
+  player.replaceChildren();
+  if (soundtrackNames.has(track)) player.append(soundtrackPlayer(track));
+};
+for (const [button, inputId] of [['take-photo','camera-file'], ['choose-media','gallery-file']]) {
+  const input = byId(inputId);
+  byId(button).onclick = () => input.click();
+  input.onchange = () => {
+    const file = input.files[0];
+    if (file && /^(image|video)\//.test(file.type)) showCapture(file);
+    input.value = '';
+  };
+}
+composer.onsubmit = async event => {
   event.preventDefault();
   const form = event.currentTarget;
   const data = new FormData(form);
-  const file = data.get('file');
-  if (!/^(image|video)\//.test(file.type)) {
+  const file = draftFile;
+  if (!file || !/^(image|video)\//.test(file.type)) {
     byId('notice').textContent = 'Escolha uma foto ou um vídeo.';
     return;
   }
   const submit = form.querySelector('button[type="submit"], button');
   playShutter();
   submit.disabled = true;
-  const record = {file, caption: data.get('caption').trim(), composition: file.type.startsWith('image/') ? data.get('composition').trim() : ''};
+  const record = {file, caption: data.get('caption').trim(), composition: file.type.startsWith('image/') ? data.get('composition').trim() : '', soundtrack: data.get('soundtrack')};
   try {
     await restored;
     const key = await posts('readwrite', store => store.add(record));
@@ -865,6 +952,7 @@ byId('composer').onsubmit = async event => {
     highlightPost(post);
     renderStories();
     form.reset();
+    showCapture(null);
     byId('notice').textContent = '';
     openView('feed');
     if (file.type.startsWith('image/')) {
@@ -873,7 +961,7 @@ byId('composer').onsubmit = async event => {
   } catch {
     byId('notice').textContent = 'Não foi possível salvar neste navegador. Verifique o espaço disponível.';
   } finally {
-    submit.disabled = false;
+    submit.disabled = !draftFile;
   }
 };
 let installPrompt;
