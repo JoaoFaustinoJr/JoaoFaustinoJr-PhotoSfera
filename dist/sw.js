@@ -1,5 +1,5 @@
-const CACHE = 'photosfera-shell-v42';
-const assets = ['./luz-de-janela.mp3','./depois-do-sinal.mp3','./sol-no-quintal.mp3','./a-cidade-pela-janela.mp3','./sunshine-on-our-side.mp3','./the-good-we-carry.mp3','./the-long-way-home.mp3','./the-years-between-h-trip.mp3','./marca-photosphera.webp','./','./manifest.webmanifest?v=4','./photosphera-estrela-192.png','./photosphera-estrela-512.png','./sfera.woff','./obturador.wav','./cartao-photosfera-dourado-prateado.jpg','./serra.webp','./avatar.webp','./lia.webp','./rafael.webp','./clara.webp','./joao.webp'];
+const CACHE = 'photosfera-shell-v43';
+const assets = ['./the-long-way-home.mp3','./the-years-between-h-trip.mp3','./marca-photosphera.webp','./','./manifest.webmanifest?v=4','./photosphera-estrela-192.png','./photosphera-estrela-512.png','./sfera.woff','./obturador.wav','./cartao-photosfera-dourado-prateado.jpg','./serra.webp','./avatar.webp','./lia.webp','./rafael.webp','./clara.webp','./joao.webp'];
 self.addEventListener('install', event => event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(assets)).then(() => self.skipWaiting())));
 self.addEventListener('activate', event => event.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(key => key.startsWith('photosfera-shell-') && key !== CACHE).map(key => caches.delete(key)))).then(() => self.clients.claim())));
 self.addEventListener('fetch', event => {
